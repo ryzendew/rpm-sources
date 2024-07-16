@@ -1,15 +1,18 @@
 Name:           kde-nobara
-Version:        6.0.5
-Release:        2%{?dist}
+Version:        6.1.1
+Release:        8%{?dist}
 Summary:        KDE Presets from NobaraProject Official
 License:    	GPLv2
 URL:            https://github.com/nobara-project/nobara-core-packages
 Source0:        %{URL}/releases/download/1.0/kde-nobara.tar.gz
 BuildArch:      noarch
 
+BuildRequires: systemd-rpm-macros
 Requires:		kde-filesystem
 Requires:       papirus-icon-theme
-Requires:       kde-rounded-corners
+Requires:       papirus-icon-theme-dark
+Requires:       papirus-folders
+Requires:       starship
 Provides:       kde-nobara
 Provides: plasma-lookandfeel-nobara
 Requires: kde-nobara-sddm
@@ -60,15 +63,17 @@ Nobara sddm theme
 %build
 
 %install
-mkdir -p %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}%{_datadir}/
 mkdir -p %{buildroot}%{_sysconfdir}/
-cp -rv usr/bin/* %{buildroot}%{_bindir}
+mkdir -p %{buildroot}%{_userunitdir}/
 cp -rv usr/share/* %{buildroot}%{_datadir}
+cp -rv usr/lib/systemd/* %{buildroot}%{_prefix}/lib/systemd/*
 cp -rv etc/* %{buildroot}%{_sysconfdir}
 
 # Do post-installation
 %post
+%systemd_user_post nobara-clean-theme-login.service
+%systemd_user_post nobara-clean-theme-logout.service
 
 # Do before uninstallation
 %preun
@@ -76,11 +81,14 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 # Do after uninstallation
 %postun
 
+%posttrans
+%systemd_user_post nobara-clean-theme-login.service
+%systemd_user_post nobara-clean-theme-logout.service
+
 # This lists all the files that are included in the rpm package and that
 # are going to be installed into target system where the rpm is installed.
 %files
 %license LICENSE
-%{_bindir}/nobara-gtk
 %{_datadir}/color-schemes/Nobara.colors
 %{_datadir}/konsole/Nobara.colorscheme
 %{_datadir}/konsole/Nobara.profile
@@ -97,7 +105,9 @@ cp -rv etc/* %{buildroot}%{_sysconfdir}
 %{_datadir}/themes/Nobara/settings.ini
 %{_datadir}/themes/Nobara/window_decorations.css
 %{_datadir}/icons/*
+%{_datadir}/polkit-1/*
 %{_datadir}/aurorae/*
+%{_prefix}/lib/systemd/*
 %{_sysconfdir}/*
 
 %files extras-wallpapers

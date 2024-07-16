@@ -1,11 +1,11 @@
 Name:    plasma-workspace-wallpapers
-Version: 6.0.5
+Version: 6.1.1
 Release: 1%{?dist}
 Summary: Additional wallpapers for Plasma workspace
 License: LGPLv3
 URL:     https://cgit.kde.org/%{name}.git
 
-Source0: https://download.kde.org/%{stable_kf6}/plasma/%{version}/%{name}-%{version}.tar.xz
+Source0: https://download.kde.org/stable/plasma/%{version}/%{name}-%{version}.tar.xz
 BuildArch: noarch
 
 BuildRequires:  extra-cmake-modules
@@ -73,6 +73,12 @@ Obsoletes:      plasma-workspace-wallpapers < 5.2.0-2
 %{_datadir}/wallpapers/Volna/
 
 %changelog
+* Thu Jun 13 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.0-1
+- 6.1.0
+
+* Fri May 24 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.0.90-1
+- 6.0.90
+
 * Wed May 22 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.0.5-1
 - 6.0.5
 

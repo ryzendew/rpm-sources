@@ -1,6 +1,6 @@
 %global _default_patch_fuzz 2
 
-%global commit d963fd596eaa2462dec55f354ed48f92010b0722
+%global commit e9f63df2f2c0dafe0997dd69b60b7da99b5d91f4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global build_timestamp %(date +"%Y%m%d")
 %global rel_build git.%{build_timestamp}.%{shortcommit}%{?dist}
@@ -81,12 +81,12 @@ Source0:        https://gitlab.freedesktop.org/mesa/mesa/-/archive/%{commit}/mes
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-# Performance bump
+# Performance bumps
 # https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/25576
 Patch2: 25576.patch
 
 # https://gitlab.com/evlaV/mesa/
-Patch3: valve.patch
+Patch4: valve.patch
 
 Patch10:        gnome-shell-glthread-disable.patch
 

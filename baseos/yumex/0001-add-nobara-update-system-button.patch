@@ -1,32 +1,16 @@
-From c64cbde76fb8688a84f3be6c75ad8ce79860c12e Mon Sep 17 00:00:00 2001
+From 93e599e0ee5456aec209b7c4d7ce60479035e828 Mon Sep 17 00:00:00 2001
 From: GloriousEggroll <gloriouseggroll@gmail.com>
-Date: Sat, 8 Apr 2023 23:38:34 -0600
+Date: Fri, 14 Jun 2024 13:20:29 -0600
 Subject: [PATCH] add nobara update system button
 
 ---
- data/ui/shortcuts.blp |  4 ++++
  data/ui/window.blp    | 10 +++++++++-
  yumex/main.py         |  1 +
  yumex/ui/window.py    |  8 ++++++++
  4 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/data/ui/shortcuts.blp b/data/ui/shortcuts.blp
-index 8736eee..8e8c37a 100644
---- a/data/ui/shortcuts.blp
-+++ b/data/ui/shortcuts.blp
-@@ -19,6 +19,10 @@ ShortcutsWindow help_overlay {
-         title: _("Apply Actions/Confirm");
-         action-name: "app.apply_actions";
-       }
-+      ShortcutsShortcut {
-+        title: _("Update the system/Confirm");
-+        action-name: "app.update_actions";
-+      }
-       ShortcutsShortcut {
-         title: _("Close Dialog/Cancel");
-         shortcut-type: accelerator;
 diff --git a/data/ui/window.blp b/data/ui/window.blp
-index 8b86298..d1d2705 100644
+index f79ac5c..c80131d 100644
 --- a/data/ui/window.blp
 +++ b/data/ui/window.blp
 @@ -66,7 +66,15 @@ template $YumexMainWindow : Adw.ApplicationWindow {
@@ -47,42 +31,43 @@ index 8b86298..d1d2705 100644
          Gtk.Box {
            orientation: vertical;
 diff --git a/yumex/main.py b/yumex/main.py
-index a950100..527c5f3 100644
+index c18ad5c..8e06c48 100644
 --- a/yumex/main.py
 +++ b/yumex/main.py
-@@ -90,6 +90,7 @@ class YumexApplication(Adw.Application):
-         self.create_action("flatpak_runtime", self.win.on_actions)
-
+@@ -91,6 +91,7 @@ class YumexApplication(Adw.Application):
+         self.create_action("flatpak_remove_unused", self.win.on_actions)
+ 
          self.create_action("apply_actions", self.win.on_actions, ["<Ctrl>Return"])
 +        self.create_action("update_actions", self.win.on_actions)
          self.create_action("page_one", self.win.on_actions, ["<Alt>1"])
          self.create_action("page_two", self.win.on_actions, ["<Alt>2"])
          self.create_action("page_three", self.win.on_actions, ["<Alt>3"])
 diff --git a/yumex/ui/window.py b/yumex/ui/window.py
-index c770b86..7274139 100644
+index 1290cc3..578ced9 100644
 --- a/yumex/ui/window.py
 +++ b/yumex/ui/window.py
-@@ -14,6 +14,7 @@
- # Copyright (C) 2024 Tim Lauridsen
-
+@@ -15,6 +15,8 @@
+ 
+ from pathlib import Path
  import re
 +import subprocess
-
++import os
+ 
  from gi.repository import Gtk, Adw, Gio  # type: ignore
-
-@@ -282,6 +283,11 @@ class YumexMainWindow(Adw.ApplicationWindow):
+ 
+@@ -298,6 +300,11 @@ class YumexMainWindow(Adw.ApplicationWindow):
              self.select_page(Page.PACKAGES)
              self.load_packages(PackageFilter.INSTALLED)
-
+ 
 +    def on_update_actions_clicked(self, *_args):
 +        """handler for the Update System button"""
-+
-+        subprocess.call(['python3', '/usr/lib/nobara/nobara-welcome/scripts/updater/main.py'])
++        env = os.environ.copy()
++        subprocess.Popen(["/usr/bin/python3", "/usr/bin/nobara-updater"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
 +
      @Gtk.Template.Callback()
      def on_search_changed(self, widget):
          """handler for changes in the seach entry"""
-@@ -374,6 +380,8 @@ class YumexMainWindow(Adw.ApplicationWindow):
+@@ -390,6 +397,8 @@ class YumexMainWindow(Adw.ApplicationWindow):
              case "apply_actions":
                  if self.active_page in [Page.PACKAGES, Page.QUEUE]:
                      self.on_apply_actions_clicked()
@@ -91,6 +76,6 @@ index c770b86..7274139 100644
              case "flatpak_remove":
                  if self.active_page == Page.FLATPAKS:
                      self.flatpak_view.remove()
---
+-- 
 2.45.1
 

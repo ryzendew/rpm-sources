@@ -1,32 +1,21 @@
 # X11 session is not shipped anymore
-%bcond x11 0
+%bcond x11 1
 
 Name:    kwin
-Version: 6.0.5
-Release: 2%{?dist}
+Version: 6.1.1
+Release: 1%{?dist}
 Summary: KDE Window manager
 
 License: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND (GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only) AND MIT
 URL:     https://userbase.kde.org/KWin
 
 %global plasma_version %(echo %{version} | cut -d. -f1-3)
-Source0: http://download.kde.org/%{stable_kf6}/plasma/%{plasma_version}/%{name}-%{version}.tar.xz
-
-# 6.0: Backport Wayland DRM syncobj v1 support
-# https://invent.kde.org/plasma/kwin/-/merge_requests/5511
-Patch0:  backport-linux-drm-syncobj-v1-support.patch
+#Source0: http://download.kde.org/%{stable_kf6}/plasma/%{plasma_version}/%{name}-%{version}.tar.xz
+Source0: http://download.kde.org/stable/plasma/%{version}/%{name}-%{version}.tar.xz
 
 ## upstream patches
-# https://bugs.kde.org/show_bug.cgi?id=482142
-# https://invent.kde.org/plasma/kwin/-/merge_requests/5733
-Patch10: wayland-send-dndFinished-to-source-if-target-fails-to-do-so.patch
-
-# fixes libextest being needed in steam
-# https://invent.kde.org/plasma/kwin/-/merge_requests/5496
-Patch11: 5496.patch
-
-# fixes gtk apps on plasma
-Patch12: 5780.patch
+# https://pagure.io/fedora-kde/SIG/issue/504
+Patch0:  https://invent.kde.org/plasma/kwin/-/merge_requests/5917.patch
 
 ## proposed patches
 
@@ -116,6 +105,9 @@ BuildRequires:  libdisplay-info-devel
 BuildRequires:  cmake(KWayland)
 BuildRequires:  cmake(Plasma)
 BuildRequires:  cmake(PlasmaActivities)
+
+# Unknowns
+BuildRequires:  libeis-devel
 
 ## Runtime deps
 Requires:       %{name}-libs%{?_isa} = %{version}-%{release}
@@ -260,6 +252,7 @@ rm -v %{buildroot}%{_kf6_bindir}/kwin_x11 %{buildroot}%{_userunitdir}/plasma-kwi
 %{_kf6_libdir}/kconf_update_bin/kwin-6.0-delete-desktop-switching-shortcuts
 %{_kf6_libdir}/kconf_update_bin/kwin-6.0-remove-breeze-tabbox-default
 %{_kf6_libdir}/kconf_update_bin/kwin-6.0-reset-active-mouse-screen
+%{_kf6_libdir}/kconf_update_bin/kwin-6.1-remove-gridview-expose-shortcuts
 %{_libexecdir}/kwin_killer_helper
 %{_libexecdir}/kwin-applywindowdecoration
 %{_datadir}/kconf_update/kwin.upd
@@ -267,7 +260,7 @@ rm -v %{buildroot}%{_kf6_bindir}/kwin_x11 %{buildroot}%{_userunitdir}/plasma-kwi
 %{_kf6_datadir}/config.kcfg/kwin.kcfg
 %{_kf6_datadir}/config.kcfg/kwindecorationsettings.kcfg
 %{_kf6_datadir}/config.kcfg/virtualdesktopssettings.kcfg
-%{_kf6_datadir}/config.kcfg/nightcolorsettings.kcfg
+%{_kf6_datadir}/config.kcfg/nightlightsettings.kcfg
 %{_datadir}/icons/hicolor/*/apps/kwin.*
 %{_datadir}/knsrcfiles/*.knsrc
 %{_datadir}/krunner/dbusplugins/kwin-runner-windows.desktop
@@ -301,6 +294,18 @@ rm -v %{buildroot}%{_kf6_bindir}/kwin_x11 %{buildroot}%{_userunitdir}/plasma-kwi
 
 
 %changelog
+* Tue Jun 18 2024 Steve Cossette <farchord@gmail.com> - 6.1.0-3
+- Added libeis as a build dependancy
+
+* Mon Jun 17 2024 Alessandro Astone <ales.astone@gmail.com> - 6.1.0-2
+- Backport patch to allow org.freedesktop.locale1 in livesys
+
+* Thu Jun 13 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.0-1
+- 6.1.0
+
+* Fri May 24 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.0.90-1
+- 6.0.90
+
 * Wed May 22 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.0.5-1
 - 6.0.5
 

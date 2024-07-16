@@ -1,6 +1,6 @@
 Name:          nobara-welcome
-Version:       5.0.0
-Release:       11%{?dist}
+Version:       5.0.2
+Release:       3%{?dist}
 License:       GPLv2
 Group:         System Environment/Libraries
 Summary:       Nobara's Welcome App
@@ -15,6 +15,7 @@ BuildRequires:	gdk-pixbuf2-devel
 BuildRequires:	gtk4-devel
 BuildRequires:	gtk3-devel
 BuildRequires:	libadwaita-devel
+BuildRequires:	systemd-rpm-macros
 
 Requires:      /usr/bin/bash
 Requires:	python3
@@ -23,7 +24,6 @@ Requires:	gtk3
 Requires:	gtk4
 Requires:	libadwaita
 Requires: 	glib2
-Provides:	nobara-sync
 
 # App Deps
 Requires:	python3-gobject
@@ -39,6 +39,11 @@ Requires: 	util-linux
 Requires: 	nobara-driver-manager
 Requires: 	vte291
 Requires: 	rt
+Requires: 	libappindicator-gtk3
+Requires: 	python-cairosvg
+Requires: 	python-pillow
+Requires: 	python3-dbus
+Requires: 	nobara-updater
 
 # Gnome Deps
 Suggests:	gnome-tweaks
@@ -55,14 +60,18 @@ DESTDIR=%{buildroot} make install
 # for legacy updater to detect changes
 mkdir -p %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-welcome/
 mkdir -p %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-updater/
-ln -s /usr/lib/nobara/nobara-welcome/scripts/updater/nobara-sync.sh %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-welcome/updater.sh
-ln -s /usr/lib/nobara/nobara-welcome/scripts/updater/nobara-sync.sh %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-updater/nobara-sync.sh
-
+ln -s /usr/lib/nobara/nobara-welcome/scripts/update-manager.sh %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-welcome/updater.sh
+ln -s /usr/lib/nobara/nobara-welcome/scripts/update-manager.sh %{buildroot}%{_sysconfdir}/nobara/scripts/nobara-updater/nobara-sync.sh
+mkdir -p %{buildroot}%{_prefix}/lib/nobara/nobara-welcome/scripts/updater/
+cat << 'EOF' > %{buildroot}%{_prefix}/lib/nobara/nobara-welcome/scripts/updater/nobara-sync.sh
+#!/bin/bash
+echo "THE UPDATE SYSTEM APP HAS RECEIVED A MAJOR UPDATE. PLEASE CLOSE THIS WINDOW AND RUN THE UPDATE SYSTEM APP AGAIN."
+EOF
+chmod +x %{buildroot}%{_prefix}/lib/nobara/nobara-welcome/scripts/updater/nobara-sync.sh
 
 %description
 Nobara's Python3 & GTK3 built Welcome App
 %files
-%{_prefix}/lib/nobara/nobara-welcome/scripts/updater/*
 %{_prefix}/lib/nobara/nobara-welcome/scripts/*
 %{_bindir}/*
 %{_datadir}/applications/*
@@ -70,10 +79,9 @@ Nobara's Python3 & GTK3 built Welcome App
 %{_datadir}/icons/hicolor/64x64/apps/*.svg
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 %{_datadir}/nobara/*
-%{_sysconfdir}/xdg/autostart/nobara-welcome-autostart.desktop
+%{_sysconfdir}/xdg/autostart/*.desktop
 %{_sysconfdir}/nobara/scripts/nobara-welcome/updater.sh
 %{_sysconfdir}/nobara/scripts/nobara-updater/nobara-sync.sh
 
 %post
 glib-compile-schemas /usr/share/glib-2.0/schemas/
-

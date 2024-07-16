@@ -65,9 +65,9 @@ algorithms and decoding only VC1 algorithm.
 
 Name:           %{srcname}-freeworld
 Summary:        Mesa graphics libraries
-%global ver 24.1.1
+%global ver 24.1.3
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -78,6 +78,8 @@ Source0:        https://archive.mesa3d.org/%{srcname}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
+
+Patch0:         gnome-shell-glthread-disable.patch
 
 BuildRequires:  meson >= 1.3.0
 BuildRequires:  gcc
