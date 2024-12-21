@@ -1,13 +1,19 @@
 diff --git a/profile b/profile
-index de8e9ab..c49f584 100644
+index de8e9ab..e4273ca 100644
 --- a/profile
 +++ b/profile
-@@ -83,3 +83,47 @@ then
+@@ -83,3 +83,55 @@ then
     . /etc/bashrc
  fi
  
 +# workaround for input issue https://github.com/ibus/ibus/issues/2618
 +export IBUS_ENABLE_SYNC_MODE=2
++
++# https://bugs.kde.org/show_bug.cgi?id=488941,
++export KWIN_DRM_ALLOW_NVIDIA_COLORSPACE=1
++
++# https://bugs.kde.org/show_bug.cgi?id=495260
++export KWIN_DRM_DISABLE_TRIPLE_BUFFERING=0
 +
 +# nvidia rendering fixup
 +if [ -f /bin/lspci ]; then
@@ -42,11 +48,13 @@ index de8e9ab..c49f584 100644
 +    fi
 +fi
 +
-+if [[ $(which starship) == "/usr/bin/starship" ]]; then
++if test "$BASH"; then
++  if [[ $(which starship) == "/usr/bin/starship" ]]; then
 +    eval "$(starship init bash)"
 +    if [ ! -f $HOME/.config/starship.toml ]; then
 +        if [ -f /usr/share/starship/starship.toml ]; then
 +            cp /usr/share/starship/starship.toml $HOME/.config/
 +        fi
 +    fi
++  fi
 +fi

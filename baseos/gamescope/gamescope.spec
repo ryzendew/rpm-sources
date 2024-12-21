@@ -1,7 +1,7 @@
 %global libliftoff_minver 0.4.1
 
 # latest git
-%define commit 7b592acd7eb6f4aad7009e313f2178b70a3ca355
+%define commit 7dd1bcd9102a17e039970ccd9a324a9fe8365d6d
 
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global _default_patch_fuzz 2
@@ -10,7 +10,7 @@
 %global rel_build 1.git.%{build_timestamp}.%{shortcommit}%{?dist}
 
 Name:           gamescope
-Version:        3.14.23
+Version:        3.15.14
 Release:        %{rel_build}
 Summary:        Micro-compositor for video games on Wayland
 
@@ -20,20 +20,22 @@ URL:            https://github.com/ValveSoftware/gamescope
 # Create stb.pc to satisfy dependency('stb')
 Source0:        stb.pc
 
+# From Fedora
+Patch0:         0001-cstdint.patch
+
 # https://github.com/ChimeraOS/gamescope
-Patch0:         chimeraos.patch
+Patch1:         chimeraos.patch
 # https://hhd.dev/
-Patch1:         disable-steam-touch-click-atom.patch
-# https://github.com/ValveSoftware/gamescope/pull/1281
-Patch2:         deckhd.patch
-# https://github.com/ValveSoftware/gamescope/issues/1398
-Patch3:         drm-Separate-BOE-and-SDC-OLED-Deck-panel-rates.patch
-# https://github.com/ValveSoftware/gamescope/issues/1369
-Patch4:         revert-299bc34.patch
+#Patch2:         disable-steam-touch-click-atom.patch
+#Patch3:         v2-0001-always-send-ctrl-1-2-to-steam-s-wayland-session.patch
+
 # https://github.com/ValveSoftware/gamescope/pull/1335
-Patch5:         1335.patch
+# causes coredumps and hang on switch to desktop, drop for now
+#Patch4:         1335.patch
+
 # https://github.com/ValveSoftware/gamescope/pull/1231
-Patch6:         1231.patch
+#Patch5:         1231.patch
+
 
 BuildRequires:  meson >= 0.54.0
 BuildRequires:  ninja-build
@@ -42,6 +44,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  glm-devel
 BuildRequires:  google-benchmark-devel
+BuildRequires:  lcms2-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXcursor-devel
 BuildRequires:  libeis-devel
@@ -71,6 +74,7 @@ BuildRequires:  (pkgconfig(libliftoff) >= 0.4.1 with pkgconfig(libliftoff) < 0.5
 BuildRequires:  pkgconfig(libcap)
 BuildRequires:  pkgconfig(hwdata)
 BuildRequires:  spirv-headers-devel
+BuildRequires:  luajit-devel
 # Enforce the the minimum EVR to contain fixes for all of:
 # CVE-2021-28021 CVE-2021-42715 CVE-2021-42716 CVE-2022-28041 CVE-2023-43898
 # CVE-2023-45661 CVE-2023-45662 CVE-2023-45663 CVE-2023-45664 CVE-2023-45666
@@ -120,7 +124,9 @@ sed -i 's^../thirdparty/SPIRV-Headers/include/spirv/^/usr/include/spirv/^' src/m
 %build
 cd gamescope
 export PKG_CONFIG_PATH=pkgconfig
-%meson -Dpipewire=enabled -Dinput_emulation=enabled -Ddrm_backend=enabled -Drt_cap=enabled -Davif_screenshots=enabled -Dsdl2_backend=enabled -Dforce_fallback_for=vkroots,wlroots,libliftoff
+%meson \
+    --auto-features=enabled \
+    -Dforce_fallback_for=vkroots,wlroots,libliftoff
 %meson_build
 
 %install
@@ -134,9 +140,10 @@ cd gamescope
 %{_bindir}/gamescopectl
 %{_bindir}/gamescopestream
 %{_bindir}/gamescopereaper
+%{_datadir}/gamescope/scripts/
 
 %files libs
-%{_libdir}/*.so
-%{_datadir}/vulkan/implicit_layer.d/
+%{_libdir}/libVkLayer_FROG_gamescope_wsi_*.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_FROG_gamescope_wsi.*.json
 
 %changelog

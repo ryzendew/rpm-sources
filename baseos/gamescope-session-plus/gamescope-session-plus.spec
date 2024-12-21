@@ -1,6 +1,6 @@
 Name:           gamescope-session-plus
-Version:        0.2.git.201.5538cd66
-Release:        52%{?dist}
+Version:        0.3.215
+Release:        git.d8ab829%{?dist}
 Summary:        Gamescope session plus based on Valve's gamescope
 
 License:        MIT
@@ -14,14 +14,14 @@ Requires:       python3
 Requires:       pulseaudio-utils
 Requires:       steam
 Requires:       gamescope-session-steam
+Requires:       gamescope-session-common
+Requires:       steam-powerbuttond
+Requires:       deckyloader
 
 BuildRequires:  systemd-rpm-macros
 
 Obsoletes:      gamescope-session
-Provides:       powerbuttond
-Provides:       steam-powerbuttond
-Obsoletes:      powerbuttond
-Obsoletes:      steam-powerbuttond
+Obsoletes:      gamescope-session-plus <= 0.2.git.201.5538cd66
 
 %description
 Gamescope session plus based on Valve's gamescope
@@ -85,7 +85,6 @@ fi
 %{_datadir}/gamescope-session-plus/gamescope-session-plus
 %{_datadir}/polkit-1/actions/org.gamescope.start.policy
 %{_sysconfdir}/xdg/autostart/deckscale.desktop
-%{_sysconfdir}/gamescope-session-plus/*
 %{_userunitdir}/gamescope-session-plus@.service
 %{_libexecdir}/*
 

@@ -3,9 +3,10 @@
 
 Name:    plasma-workspace
 Summary: Plasma workspace, applications and applets
-Version: 6.1.1
+Version: 6.2.2
 Release: 1%{?dist}
 
+# Automatically converted from old format: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND (GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only) AND MIT - review is highly recommended.
 License: BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND LGPL-3.0-only AND LGPL-3.0-or-later AND (GPL-2.0-only OR GPL-3.0-only) AND (LGPL-2.1-only OR LGPL-3.0-only) AND MIT
 URL:     https://invent.kde.org/plasma/%{name}
 Source0: https://download.kde.org/stable/plasma/%{version}/%{name}-%{version}.tar.xz
@@ -31,8 +32,6 @@ Source41:       spice-vdagent.conf
 Patch106:       plasma-workspace-5.27.80-enable-open-terminal-action.patch
 # default to enable the lock/logout actions
 Patch107:       plasma-workspace-5.27.80-enable-lock-logout-action.patch
-# /usr/bin/qtpaths-qt6
-Patch109:       qtpaths-binary-name.patch
 
 # udev
 BuildRequires:  zlib-devel
@@ -82,6 +81,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-qtdeclarative-devel
 BuildRequires:  qt6-qtsvg-devel
 BuildRequires:  qt6-qtwayland-devel
+BuildRequires:  cmake(Qt6Positioning)
 BuildRequires:  cmake(Qt6ShaderTools)
 BuildRequires:  polkit-qt6-1-devel
 BuildRequires:  libcanberra-devel
@@ -227,6 +227,9 @@ Requires:       /usr/bin/qtpaths-qt6
 
 Requires:       iceauth xrdb xprop
 
+# Set XWayland cursor. Remove in 6.3.0: https://invent.kde.org/plasma/plasma-workspace/-/merge_requests/4700
+Requires:       xsetroot
+
 Requires:       kde-settings-plasma
 
 # Default look-and-feel theme
@@ -320,7 +323,8 @@ developing applications that use %{name}.
 
 %package        doc
 Summary:        Documentation and user manuals for %{name}
-License:        GFDL
+# Automatically converted from old format: GFDL - review is highly recommended.
+License:        LicenseRef-Callaway-GFDL
 # switch to noarch
 Obsoletes:      plasma-workspace-doc < 5.3.1-2
 Requires:       %{name}-common = %{version}-%{release}
@@ -411,7 +415,9 @@ Provides:       deprecated()
 %build
 %cmake_kf6 \
   -DINSTALL_SDDM_WAYLAND_SESSION:BOOL=ON \
-  -DPLASMA_X11_DEFAULT_SESSION:BOOL=OFF
+  -DPLASMA_X11_DEFAULT_SESSION:BOOL=OFF \
+  -DGLIBC_LOCALE_GEN:BOOL=OFF \
+  -DGLIBC_LOCALE_PREGENERATED:BOOL=ON
 %cmake_build
 
 
@@ -461,7 +467,7 @@ cat *.lang | sort | uniq -u > %{name}.lang
 
 
 %check
-desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.{plasmashell,kcolorschemeeditor,kfontview,plasmawindowed}.desktop
+desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.{plasmashell,kcolorschemeeditor,kfontview,plasmawindowed,klipper}.desktop
 
 %post
 if [ -s /usr/sbin/setsebool ] ; then
@@ -472,6 +478,7 @@ fi
 %license LICENSES
 
 %files -f %{name}.lang
+%{_kf6_datadir}/xdg-desktop-portal/kde-portals.conf
 %{_sysconfdir}/xdg/menus/plasma-applications.menu
 %{_kf6_bindir}/gmenudbusmenuproxy
 %{_kf6_bindir}/kcminit
@@ -484,7 +491,6 @@ fi
 %{_kf6_bindir}/plasma_session
 %{_kf6_bindir}/plasma-apply-*
 %{_kf6_bindir}/plasma-interactiveconsole
-%{_kf6_bindir}/plasma-localegen-helper
 %{_kf6_bindir}/plasma-shutdown
 %{_kf6_bindir}/plasma_waitforname
 %{_kf6_bindir}/xembedsniproxy
@@ -520,9 +526,7 @@ fi
 %{_datadir}/desktop-directories/*.directory
 %{_datadir}/dbus-1/services/*.service
 %{_datadir}/dbus-1/system-services/org.kde.fontinst.service
-%{_datadir}/dbus-1/system-services/org.kde.localegenhelper.service
 %{_datadir}/dbus-1/system.d/org.kde.fontinst.conf
-%{_datadir}/dbus-1/system.d/org.kde.localegenhelper.conf
 %{_datadir}/knsrcfiles/*.knsrc
 %{_datadir}/kfontinst/icons/hicolor/*/actions/*font*.png
 %{_datadir}/konqsidebartng/virtual_folders/services/fonts.desktop
@@ -541,11 +545,11 @@ fi
 %{_kf6_datadir}/applications/org.kde.kfontinst.desktop
 %{_kf6_datadir}/applications/org.kde.plasmawindowed.desktop
 %{_kf6_datadir}/applications/org.kde.plasma-fallback-session-save.desktop
+%{_kf6_datadir}/applications/org.kde.klipper.desktop
 %{_kf6_datadir}/kio/servicemenus/installfont.desktop
 %{_kf6_datadir}/qlogging-categories6/*.categories
 %{_sysconfdir}/xdg/plasmanotifyrc
 %{_kf6_datadir}/polkit-1/actions/org.kde.fontinst.policy
-%{_kf6_datadir}/polkit-1/actions/org.kde.localegenhelper.policy
 %{_userunitdir}/*.service
 %{_userunitdir}/plasma-core.target
 %dir %{_userunitdir}/plasma-core.target.d/
@@ -571,6 +575,7 @@ fi
 %{_libdir}/libcolorcorrect.so.*
 %{_libdir}/libtaskmanager.so.*
 %{_libdir}/libweather_ion.so.*
+%{_libdir}/libklipper.so.*
 %{_libdir}/libkrdb.so
 %{_libdir}/libnotificationmanager.*
 %{_libdir}/libkfontinst*
@@ -625,6 +630,7 @@ fi
 %files devel
 %{_libdir}/libbatterycontrol.so
 %{_libdir}/libcolorcorrect.so
+%{_libdir}/libklipper.so
 %{_libdir}/libweather_ion.so
 %{_libdir}/libtaskmanager.so
 %{_libdir}/libplasma-geolocation-interface.so
@@ -663,6 +669,56 @@ fi
 %endif
 
 %changelog
+* Sun Oct 06 2024 Steve Cossette <farchord@gmail.com> - 6.2.0-2
+- 6.2.0 Respin
+
+* Thu Oct 03 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.2.0-1
+- 6.2.0
+
+* Sun Sep 15 2024 Alessandro Astone <ales.astone@gmail.com> - 6.1.90-2
+- Add missing dependency on xsetroot.
+  Fixes cursor in some XWayland apps.
+  (https://pagure.io/fedora-kde/SIG/issue/562)
+
+* Thu Sep 12 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.90-1
+- 6.1.90
+
+* Tue Sep 10 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.5-1
+- 6.1.5
+- Add missing dependency on xsetroot.
+  Fixes cursor in some XWayland apps.
+  (https://pagure.io/fedora-kde/SIG/issue/562)
+
+* Wed Sep 04 2024 Miroslav Suchý <msuchy@redhat.com> - 6.1.4-3
+- convert license to SPDX
+
+* Thu Aug 15 2024 Alessandro Astone <ales.astone@gmail.com> - 6.1.4-2
+- Set pre-generated locales (rhbz#2300192)
+
+* Fri Aug 09 2024 Steve Cossette <farchord@gmail.com> - 6.1.4-1
+- 6.1.4
+
+* Thu Jul 25 2024 Timothée Ravier <tim@siosm.fr> - 6.1.3-4
+- Backport patch for https://pagure.io/fedora-kde/SIG/issue/539
+
+* Wed Jul 24 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.3-3
+- rebuilt
+
+* Fri Jul 19 2024 Fedora Release Engineering <releng@fedoraproject.org> - 6.1.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
+* Tue Jul 16 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.3-1
+- 6.1.3
+
+* Sat Jul 06 2024 Mukundan Ragavan <nonamedotc@gmail.com> - 6.1.2-2
+- rebuild for libqalculate soname update
+
+* Wed Jul 03 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.2-1
+- 6.1.2
+
+* Tue Jun 25 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.1-1
+- 6.1.1
+
 * Tue Jun 18 2024 Marc Deop i Argemí <marcdeop@fedoraproject.org> - 6.1.0-3
 - Rebuild to sort dependencies with plasma-desktop
 

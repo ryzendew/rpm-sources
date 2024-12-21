@@ -431,18 +431,18 @@ index b476a31..ed1804e 100644
  
          // For zfs, we need to make the passphrase available to later modules
 diff --git a/src/modules/partition/partition.conf b/src/modules/partition/partition.conf
-index 0975179..09cbafd 100644
+index 0975179..816017b 100644
 --- a/src/modules/partition/partition.conf
 +++ b/src/modules/partition/partition.conf
-@@ -41,7 +41,7 @@ efi:
- # efiSystemPartition:     "/boot/efi"
+@@ -33,7 +33,7 @@
+ # size. Distro's that allow more user latitude can set the minimum lower.
+ efi:
+     mountPoint:         "/boot/efi"
+-    recommendedSize:    300MiB
++    recommendedSize:    600MiB
+     minimumSize:        32MiB
+     label:              "EFI"
  
- # Deprecated alias of efi.recommendedSize
--# efiSystemPartitionSize:          300MiB
-+efiSystemPartitionSize:          600MiB
- 
- # Deprecated alias of efi.label
- # efiSystemPartitionName:     EFI
 @@ -99,7 +99,7 @@ userSwapChoices:
  #
  # The default is luks1
@@ -732,4 +732,41 @@ index 3be6b92..965653c 100644
      DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps
  )
 
+
+From 0ce3761cccc0f76a5c7816804b5dee8163d3a951 Mon Sep 17 00:00:00 2001
+From: GloriousEggroll <gloriouseggroll@gmail.com>
+Date: Mon, 30 Sep 2024 23:12:56 -0600
+Subject: [PATCH] dont warn about no internet
+
+---
+ src/modules/welcome/welcome.conf   | 1 -
+ src/modules/welcomeq/welcomeq.conf | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/src/modules/welcome/welcome.conf b/src/modules/welcome/welcome.conf
+index b988eb2..97d1166 100644
+--- a/src/modules/welcome/welcome.conf
++++ b/src/modules/welcome/welcome.conf
+@@ -83,7 +83,6 @@ requirements:
+         - storage
+         - ram
+         - power
+-        - internet
+         - root
+         - screen
+         - "false"
+diff --git a/src/modules/welcomeq/welcomeq.conf b/src/modules/welcomeq/welcomeq.conf
+index 2efc514..9247a2f 100644
+--- a/src/modules/welcomeq/welcomeq.conf
++++ b/src/modules/welcomeq/welcomeq.conf
+@@ -26,7 +26,6 @@ requirements:
+         - storage
+         - ram
+         - power
+-        - internet
+         - root
+         - screen
+     required:
+-- 
+2.46.2
 
