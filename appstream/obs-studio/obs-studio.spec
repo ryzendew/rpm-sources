@@ -37,12 +37,12 @@
 #global snapdate 202303261743
 #global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-%define version_string 30.1.1
+%define version_string 30.1.1 ## just for show and does not need to be changed
 %global build_timestamp %(date +"%Y%m%d")
 %global rel_build %{build_timestamp}.%{shortcommit}%{?dist}
 %global _default_patch_fuzz 2
 # obs version and commit
-%define commit 082377043e9507496537f7dd32002212a4d16f54
+%define commit a0e4e3734126a7e76a871fa671be952de5c13dd8 ## Update to newest master commit
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 Name:           obs-studio
